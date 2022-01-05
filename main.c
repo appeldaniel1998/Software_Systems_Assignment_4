@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Define the maximum number of vertices in the graph
-#define N 6
+
 
 
 // Data structure to store nodes of the graph
@@ -192,20 +191,20 @@ int main() {
                 if (g.nodes[i].id == nodeID) { //finding if new node exists in graph
                     flag = 1;
                     for (int j = 0; j < g.numOfEdges; j++) {
-                        if (g.edges[j].src == nodeID) { //check if there are edges outgoing from the existing node
+                        if (g.edges[i].src == nodeID) {
                             countDelEdges++;
-                            g.edges[j].src = -1;
+                            g.edges[i].src = -1;
                         }
                     }
                     struct Edge *edges = (struct Edge *) malloc(
                             (g.numOfEdges - countDelEdges) * sizeof(struct Edge));
                     int currEdgeInd = 0;
                     for (int j = 0; j < g.numOfEdges; j++) {
-                        if (g.edges[j].src != -1) {
+                        if (g.edges[i].src != -1) {
                             struct Edge e1;
-                            e1.src = g.edges[j].src;
-                            e1.dest = g.edges[j].dest;
-                            e1.weight = g.edges[j].weight;
+                            e1.src = g.edges[i].src;
+                            e1.dest = g.edges[i].dest;
+                            e1.weight = g.edges[i].weight;
                             edges[currEdgeInd] = e1;
                             currEdgeInd++;
                         }
@@ -248,13 +247,12 @@ int main() {
             }
             free(edges);
 
-            g.numOfEdges += edgeInd;
-            struct Edge *edgesTotal = (struct Edge *) realloc(g.edges, g.numOfEdges * sizeof(struct Edge));
-            for (int i = g.numOfEdges - edgeInd; i < g.numOfEdges; i++) {
-                edgesTotal[i] = newEdges[i - (g.numOfEdges - edgeInd)];
+            struct Edge *edgesTotal = (struct Edge *) realloc(g.edges, (g.numOfEdges + edgeInd) * sizeof(struct Edge));
+            for (int i = g.numOfEdges; i < g.numOfEdges + edgeInd; i++) {
+                edgesTotal[i] = newEdges[i - g.numOfEdges];
             }
             g.edges = edgesTotal;
-            free(newEdges);
+            g.numOfEdges += edgeInd;
             scanf(" %c", &mainInp);
             printf("B finished");
         }
@@ -272,7 +270,6 @@ int main() {
                     struct Node n1;
                     n1.id = g.nodes[i].id;
                     nodes[currNodeInd] = n1;
-                    currNodeInd++;
                 }
             }
             free(g.nodes);
@@ -289,7 +286,6 @@ int main() {
                     e1.dest = g.edges[i].dest;
                     e1.weight = g.edges[i].weight;
                     newEdges[currEdgeInd] = e1;
-                    currEdgeInd++;
                 }
             }
             free(g.edges);
@@ -305,7 +301,7 @@ int main() {
             int *arr = FloydWarshallInit(&g);
             int length = shortPath(&g, src, dest, arr);
             free(arr);
-            if (length >= 10000) {
+            if (length == 10000) {
                 length = -1;
             }
             printf("Dijsktra shortest path: %d \n", length);
@@ -322,9 +318,9 @@ int main() {
             }
 
             int *floyd = FloydWarshallInit(&g);
-            int minPath = INT_MAX;
+            int minPath = 100000;
             permutation(tspNodes, 0, numOfTSPNodes - 1, floyd, &minPath, numOfTSPNodes, &g);
-            if (minPath >= 100000) {
+            if (minPath == 100000) {
                 minPath = -1;
             }
             printf("TSP shortest path: %d \n", minPath);
@@ -332,10 +328,9 @@ int main() {
         } else {
             mainCount++;
             if (mainCount > 1) {
-                free(g.edges);
-                free(g.nodes);
                 break;
             }
         }
+        
     }
 }
