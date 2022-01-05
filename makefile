@@ -1,19 +1,14 @@
 CC = gcc
-CFLAGS = -Wall
-TARGETS = graph
+Flags = -Wall -g
 
-
-all: $(TARGETS)
-
-.c.o:
-	$(CC) $(CFLAGS) -c $<
-
+all: graph
 
 graph: main.o
-	$(CC) $(CFLAGS) -o graph $^
+	$(CC) $(Flags) -o graph main.o
 
 main.o: main.c
-	$(CC) $(CFLAGS) -c main.c
+	$(CC) $(Flags) -c main.c
 
+.Phony:clean all
 clean:
-	rm -f *.o *.a *.os
+	rm -f *.o *.a graph
