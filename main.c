@@ -325,4 +325,5 @@ int main() {
     }
     free(g.edges);
     free(g.nodes);
+    return 0;
 }
