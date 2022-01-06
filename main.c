@@ -1,9 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
-
-
 // Data structure to store nodes of the graph
 typedef struct Node {
     int id;
@@ -168,21 +165,21 @@ int main() {
     struct Graph g;
     int countA = 0;
     char mainInp;
-    scanf("%c", &mainInp);
-    int mainCount = 0;
+
     while (1) {
+        mainInp = getchar();
+        if (mainInp == EOF || mainInp == '\n'){
+            break;
+        }
         if (mainInp == 'A') {
-            mainCount = 0;
             countA++;
             if (countA >= 2) { //If graph already exists
                 free(g.nodes);
                 free(g.edges);
             }
             mainInp = initGraph(&g, mainInp);
-            printf("A finished");
         }
         if (mainInp == 'B') {
-            mainCount = 0;
             int nodeID;
             scanf(" %d", &nodeID);
             int countDelEdges = 0;
@@ -191,20 +188,20 @@ int main() {
                 if (g.nodes[i].id == nodeID) { //finding if new node exists in graph
                     flag = 1;
                     for (int j = 0; j < g.numOfEdges; j++) {
-                        if (g.edges[i].src == nodeID) {
+                        if (g.edges[j].src == nodeID) { //check if there are edges outgoing from the existing node
                             countDelEdges++;
-                            g.edges[i].src = -1;
+                            g.edges[j].src = -1;
                         }
                     }
                     struct Edge *edges = (struct Edge *) malloc(
                             (g.numOfEdges - countDelEdges) * sizeof(struct Edge));
                     int currEdgeInd = 0;
                     for (int j = 0; j < g.numOfEdges; j++) {
-                        if (g.edges[i].src != -1) {
+                        if (g.edges[j].src != -1) {
                             struct Edge e1;
-                            e1.src = g.edges[i].src;
-                            e1.dest = g.edges[i].dest;
-                            e1.weight = g.edges[i].weight;
+                            e1.src = g.edges[j].src;
+                            e1.dest = g.edges[j].dest;
+                            e1.weight = g.edges[j].weight;
                             edges[currEdgeInd] = e1;
                             currEdgeInd++;
                         }
@@ -247,17 +244,15 @@ int main() {
             }
             free(edges);
 
-            struct Edge *edgesTotal = (struct Edge *) realloc(g.edges, (g.numOfEdges + edgeInd) * sizeof(struct Edge));
-            for (int i = g.numOfEdges; i < g.numOfEdges + edgeInd; i++) {
-                edgesTotal[i] = newEdges[i - g.numOfEdges];
+            g.numOfEdges += edgeInd;
+            struct Edge *edgesTotal = (struct Edge *) realloc(g.edges, g.numOfEdges * sizeof(struct Edge));
+            for (int i = g.numOfEdges - edgeInd; i < g.numOfEdges; i++) {
+                edgesTotal[i] = newEdges[i - (g.numOfEdges - edgeInd)];
             }
             g.edges = edgesTotal;
-            g.numOfEdges += edgeInd;
-            scanf(" %c", &mainInp);
-            printf("B finished");
+            free(newEdges);
         }
         if (mainInp == 'D') {
-            mainCount = 0;
             int nodeID;
             scanf(" %d", &nodeID);
             struct Node *nodes = (struct Node *) malloc((g.numOfNodes - 1) * sizeof(struct Node));
@@ -270,6 +265,7 @@ int main() {
                     struct Node n1;
                     n1.id = g.nodes[i].id;
                     nodes[currNodeInd] = n1;
+                    currNodeInd++;
                 }
             }
             free(g.nodes);
@@ -286,29 +282,25 @@ int main() {
                     e1.dest = g.edges[i].dest;
                     e1.weight = g.edges[i].weight;
                     newEdges[currEdgeInd] = e1;
+                    currEdgeInd++;
                 }
             }
             free(g.edges);
             g.edges = newEdges;
-            scanf(" %c", &mainInp);
-            printf("D finished");
         }
         if (mainInp == 'S') {
-            mainCount = 0;
             int src;
             int dest;
             scanf(" %d %d", &src, &dest);
             int *arr = FloydWarshallInit(&g);
             int length = shortPath(&g, src, dest, arr);
             free(arr);
-            if (length == 10000) {
+            if (length >= 10000) {
                 length = -1;
             }
             printf("Dijsktra shortest path: %d \n", length);
-            scanf(" %c", &mainInp);
         }
         if (mainInp == 'T') {
-            mainCount = 0;
             int numOfTSPNodes;
             scanf(" %d", &numOfTSPNodes);
 
@@ -320,17 +312,12 @@ int main() {
             int *floyd = FloydWarshallInit(&g);
             int minPath = 100000;
             permutation(tspNodes, 0, numOfTSPNodes - 1, floyd, &minPath, numOfTSPNodes, &g);
-            if (minPath == 100000) {
+            if (minPath >= 100000) {
                 minPath = -1;
             }
             printf("TSP shortest path: %d \n", minPath);
-            scanf(" %c", &mainInp);
-        } else {
-            mainCount++;
-            if (mainCount > 1) {
-                break;
-            }
         }
-        
     }
+    free(g.edges);
+    free(g.nodes);
 }
