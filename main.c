@@ -316,6 +316,8 @@ int main() {
                 minPath = -1;
             }
             printf("TSP shortest path: %d \n", minPath);
+            free(tspNodes);
+            free(floyd);
         }
     }
     free(g.edges);
