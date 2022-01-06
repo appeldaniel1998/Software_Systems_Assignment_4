@@ -168,7 +168,7 @@ int main() {
 
     while (1) {
         mainInp = getchar();
-        if (mainInp == EOF || mainInp == '\n'){
+        if (mainInp == EOF || mainInp == '\n') {
             break;
         }
         if (mainInp == 'A') {
@@ -184,7 +184,7 @@ int main() {
             scanf(" %d", &nodeID);
             int countDelEdges = 0;
             int flag = 0;
-            for (int i = 0; i < g.numOfNodes; i++) { //checks if node exists, finishes loop if exists
+            for (int i = 0; i < g.numOfNodes; i++) { //checks if node exists
                 if (g.nodes[i].id == nodeID) { //finding if new node exists in graph
                     flag = 1;
                     for (int j = 0; j < g.numOfEdges; j++) {
@@ -206,6 +206,7 @@ int main() {
                             currEdgeInd++;
                         }
                     }
+                    g.numOfEdges -= countDelEdges;
                     free(g.edges);
                     g.edges = edges;
                     break;
@@ -259,7 +260,7 @@ int main() {
             int currNodeInd = 0;
 
             for (int i = 0; i < g.numOfNodes; i++)
-                //remove nodes and put them in a new array (malloc used, need to free previous array from memory)
+                //remove nodes and put them in a new array (calloc used, need to free previous array from memory)
             {
                 if (g.nodes[i].id != nodeID) {
                     struct Node n1;
@@ -270,6 +271,7 @@ int main() {
             }
             free(g.nodes);
             g.nodes = nodes;
+            g.numOfNodes--;
             //Finished removing node.
 
             //removing edges
@@ -287,6 +289,7 @@ int main() {
             }
             free(g.edges);
             g.edges = newEdges;
+            g.numOfEdges = currEdgeInd;
         }
         if (mainInp == 'S') {
             int src;
